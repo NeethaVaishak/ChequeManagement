@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="cheque_form_view" model="ir.ui.view">
+            <field name="name">cheque.form.view.form</field>
+            <field name="model">cheque.management</field>
+            <field name="arch" type="xml">
+                <form string="Cheque">
+                    <header>
+                        <button name="send_for_approval" string="SEND FOR APPROVAL"
+                                type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"
+                                groups="cheque_management.group_officer"/>
+                        <button name="approve" string="APPROVE"
+                                type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'pending_approval')]}"
+                                groups="cheque_management.group_finance_manager"/>
+                        <button name="sign" string="SIGN"
+                                type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'pending_signature')]}"
+                                groups="cheque_management.group_owner"/>
+                        <button name="submit_to_client" string="SUBMIT TO CLIENT"
+                                type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}"/>
+                        <button name="reset_to_draft" string="RESET TO DRAFT"
+                                type="object" class="oe_highlight" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        <button name="cancel" string="CANCEL"
+                                type="object" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,pending_approval,pending_signature,signed,submitted_to_client"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="button_payment" type="object" class="oe_stat_button" icon="fa-bars" attrs="{'invisible': [('state', '!=', 'submitted_to_client')]}">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">Payments</span>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="partner_id" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                <field name="amount" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                <field name="payment_type" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                <field name="date" attrs="{'readonly': [('state','!=','draft')]}" />
+                            </group>
+                            <group>
+                                <field name="memo" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                <field name="journal_id" attrs="{'readonly': [('state','!=','draft')]}"/>
+                            </group>
+                        </group>
+
+                    </sheet>
+
+                    <div class="o_attachment_preview"/>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        <record id="cheque_tree_view" model="ir.ui.view">
+            <field name="name">cheque.form.view.tree</field>
+            <field name="model">cheque.management</field>
+            <field name="arch" type="xml">
+                <tree string="Expats">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="payment_type"/>
+                    <field name="date"/>
+                    <field name="journal_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+    <record id="action_cheque_management" model="ir.actions.act_window">
+       <field name="name">Cheque</field>
+       <field name="type">ir.actions.act_window</field>
+       <field name="res_model">cheque.management</field>
+       <field name="view_mode">tree,form</field>
+       <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+            Create a new cheque
+        </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_cheque_management"
+        name="Cheque Management"
+        parent="account.menu_finance_payables"
+        action="action_cheque_management"
+    />
+</odoo>
